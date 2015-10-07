@@ -1,0 +1,42 @@
+{
+  "name": "chat-rest",
+  "version": "1.0.0",
+  "description": "REST Chat nodejs backend application",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "*",
+    "express": "^5.0.0-alpha.2",
+    "request": "*"
+  },
+  "devDependencies": {
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-bower-src": "^0.1.0",
+    "gulp-compass": "^2.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-debug": "^2.1.1",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-minify-html": "^1.0.4",
+    "gulp-rev": "^6.0.1",
+    "gulp-serve": "*",
+    "gulp-server": "^0.1.0",
+    "gulp-uglify": "^1.4.1",
+    "gulp-usemin": "^0.3.14",
+    "gulp-watch": "^4.3.5",
+    "main-bower-files": "^2.9.0",
+    "vinyl-paths": "^2.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loicortola/training-chat-rest"
+  },
+  "author": "Loic Ortola",
+  "license": "Copyright 2015 Loic Ortola All rights reserved",
+  "bugs": {
+    "url": "https://github.com/loicortola/training-chat-rest/issues"
+  },
+  "homepage": "http://training.loicortola.com/chat-rest"
+}

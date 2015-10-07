@@ -1,0 +1,109 @@
+<!--
+Copyright 2015 Loïc Ortola
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Loïc Ortola">
+  <meta name="revisit-after" content="1 hour">
+  <meta name="ROBOTS" CONTENT="INDEX, NOFOLLOW">
+  <title>Training REST Chat</title>
+  <!-- Stylesheets -->
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- build:css(app) styles/style.css -->
+  <!-- bower:css(app) -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/fontawesome/css/font-awesome.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+  <link rel="stylesheet" href="styles/main.css">
+
+</head>
+<body ng-app="MainApp" ng-controller="DashboardCtrl">
+<div class="navbar-inverse navbar-background-xs visible-xs"></div>
+<div class="navbar-inverse navbar-background hidden-xs"></div>
+
+<!-- HEADER (navbar + top menu) -->
+<div id="header">
+  <div class="navbar navbar-static-top navbar-dark">
+      REST Chat Dashboard
+  </div>
+  <span class="btn-reset pull-right" style="margin-right:10px" ng-click="reset()">Reset</span>
+</div>
+
+<!-- CONTENT -->
+<div id="content">
+  <div class="container">
+    <div class="content">
+      <h1>Registered users</h1>
+      <table class="table">
+        <tr>
+          <th>Login</th>
+        </tr>
+        <tr ng-repeat="user in users">
+          <td>{{user}}</td>
+        </tr>
+      </table>
+      <br/><br/><br/>
+    </div>
+    <div class="content">
+      <h1>Messages</h1>
+      <table class="table">
+        <tr>
+          <th>From</th>
+          <th>Content</th>
+        </tr>
+        <tr ng-repeat="message in messages">
+          <td>{{message.login}}</td>
+          <td>{{message.message}}</td>
+        </tr>
+      </table>
+      <br/><br/><br/>
+    </div>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="container">
+    <br/>
+    <p class="text-muted">Version 2.0 designed and developed by Loïc Ortola - Powered by: NodeJs - Express - Gulp - Bower - Bootstrap - SASS - FontAwesome - jQuery - Angular.js</p>
+  </div>
+</div>
+
+<!-- build:js(app) scripts/vendor.js -->
+<!-- bower:js(app) -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/es5-shim/es5-shim.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/json3/lib/json3.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-cookies/angular-cookies.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+<!-- build:js(app) scripts/script.js -->
+<script src="scripts/app.js"></script>
+<script src="scripts/controllers/dashboard.js"></script>
+<script src="scripts/controllers/register.js"></script>
+<!-- endbuild -->
+<!--
+MANUAL OVERRIDE FOR PRODUCTION FOR CSS LAZY-LOAD
+<script type='text/javascript'>
+  $('<link>').appendTo($('head')).attr({type : 'text/css', rel : 'stylesheet'}).attr('href', 'styles/style.css');
+</script>
+-->
+</body>
+</html>

@@ -1,0 +1,133 @@
+/*
+Copyright 2015 Loïc Ortola
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+                                                           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+$background-url: '../img/bg.jpg';
+
+$nav-background-color: #f5f5f5;
+
+//Main theme color 1 2 3
+$theme-color-1: #00887b;
+$theme-color-2: #ff4081;
+$theme-color-3: #adc6be;
+
+//Variations
+$theme-color-1-lighter: lighten($theme-color-1,10);
+$theme-color-2-darker: darken($theme-color-2,10);
+
+$shadow-color: #222;
+$shadow-color-lighter: #777;
+
+@mixin shadow-default($depth : 0px, $color : #292929) {
+  -moz-box-shadow: 0px 0px 2px $depth $color;
+  -webkit-box-shadow: 0px 0px 2px $depth $color;
+  -o-box-shadow: 0px 0px 2px $depth $color;
+  box-shadow: 0px 0px 2px $depth $color;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color=$color, Direction=NaN, Strength=10);
+}
+@mixin shadow-hover($color : $shadow-color) {
+  -moz-box-shadow: 0px 0px 3px 1px $color;
+  -webkit-box-shadow: 0px 3px 0px 1px $color;
+  -o-box-shadow: 0px 0px 3px 1px $color;
+  box-shadow: 0px 0px 3px 1px $color;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color=$color, Direction=NaN, Strength=10);
+}
+
+@mixin transition-hover($time : 0.2s) {
+  transition: all font $time ease-in-out;
+  -webkit-transition: all font $time ease-in-out;
+  -webkit-transition-duration: $time;
+  -moz-transition: all font $time ease-in-out;
+  -ms-transition: all font  $time ease-in-out;
+}
+
+@mixin transform-on-hover($enableShadow : false) {
+
+  transform: scale(1.02);
+  -webkit-transform: scale(1.02);
+  -moz-transform: scale(1.02);
+  -ms-transform: scale(1.02);
+  -o-transform: scale(1.02);
+  @if $enableShadow {
+    @include shadow-hover();
+  }
+}
+
+@mixin opacity($opacity : 0.8) {
+  filter : alpha(opacity=$opacity*100);
+  opacity : $opacity;
+}
+
+.navbar-dark {
+  background-color: $theme-color-1;
+  color: #222222;
+  padding-left: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 2em;
+  @include shadow-default(2px);
+}
+
+body {
+  background: white url($background-url) center center;
+  background-repeat: repeat;
+  padding: 0px;
+}
+
+.content {
+  background: $nav-background-color;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2em;
+  color: $theme-color-2;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: $theme-color-3;
+}
+
+.btn-submit {
+  font-size: 1.2em;
+  padding: 8px;
+  color: $nav-background-color;
+  background: $theme-color-1-lighter;
+  cursor: pointer;
+  @include shadow-default();
+}
+
+.btn-submit:hover {
+  @include transform-on-hover(true);
+}
+
+.btn-reset {
+  font-size: 1.2em;
+  padding: 8px;
+  color: $nav-background-color;
+  background: $theme-color-2;
+  cursor: pointer;
+  @include shadow-default();
+}
+
+.btn-reset:hover {
+  @include transform-on-hover(true);
+}
+
+.valid {
+  color: darkgreen;
+}
+
+.invalid {
+  color: darkred;
+}
