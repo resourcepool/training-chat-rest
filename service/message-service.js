@@ -39,7 +39,7 @@ var findAll = function (limit, offset) {
       return [];
     }
     // Otherwise, return subtable.
-    return messages.slice(offset, Math.min(offset + limit, messages.length));
+    return messages.slice(Math.min(messages.length - (offset + limit), 0), messages.length - offset);
   }
   // No valid limit and offset, return latest messages
   return messages.length > Conf.maxMessagesResults ? messages.slice(messages.length - Conf.maxMessagesResults, messages.length) : messages;
