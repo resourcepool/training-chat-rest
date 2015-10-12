@@ -32,17 +32,19 @@ var init = function () {
  * @returns {Array}
  */
 var findAll = function (limit, offset) {
-  // If we have a valid limit and offset
-  if (limit && limit >= 0 && limit < Conf.maxMessagesResults && offset && offset >= 0) {
-    // If offset is bigger than messages length, return empty array
-    if (offset > messages.length) {
-      return [];
-    }
-    // Otherwise, return subtable.
-    return messages.slice(Math.min(messages.length - (offset + limit), 0), messages.length - offset);
+  if (!limit || limit <= 0) {
+    limit = Conf.maxMessagesResults;
   }
-  // No valid limit and offset, return latest messages
-  return messages.length > Conf.maxMessagesResults ? messages.slice(messages.length - Conf.maxMessagesResults, messages.length) : messages;
+  if (!offset || offset < 0) {
+    offset = 0;
+  }
+  // If we have a valid limit and offset
+  // If offset is bigger than messages length, return empty array
+  if (offset > messages.length) {
+    return [];
+  }
+  // Otherwise, return subtable.
+  return messages.slice(Math.max(messages.length - (parseFloat(offset) + parseFloat(limit)), 0), messages.length - offset); 
 };
 
 /**
@@ -68,10 +70,11 @@ var post = function (data) {
       var attachment = data.attachments[i];
       if (isSupportedMimeType(attachment.mimeType)) {
         fileService.store(data.uuid, attachment);
-        attachmentsUrls.push(Conf.serverBaseUrl + '/2.0/files/' + data.uuid + '/' + i + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()]);
+        attachmentsUrls.push(Conf.server.baseUrl + '/2.0/files/' + data.uuid + '/' + i + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()]);
       }
     }
-    data.attachments = attachmentsUrls;
+    data.attachments = undefined;
+    data.images = attachmentsUrls;
   }
   // Remove oldest messages when maximum size is reached
   if (messages.length === Conf.maxMessagesInQueue) {
