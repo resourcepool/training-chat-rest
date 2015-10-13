@@ -41,10 +41,10 @@ var findAll = function (limit, offset) {
   // If we have a valid limit and offset
   // If offset is bigger than messages length, return empty array
   if (offset > messages.length) {
-    return [];
+    return {status:200,list:[]};
   }
   // Otherwise, return subtable.
-  return messages.slice(Math.max(messages.length - (parseFloat(offset) + parseFloat(limit)), 0), messages.length - offset); 
+  return {status:200,list:messages.slice(Math.max(messages.length - (parseFloat(offset) + parseFloat(limit)), 0), messages.length - offset)}; 
 };
 
 /**
