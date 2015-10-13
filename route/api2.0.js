@@ -33,7 +33,7 @@ var authenticate = function (req, res) {
 
     loginService.login(credentials.login, credentials.password, function (success, data) {
       if (success) {
-        resolve();
+        resolve(credentials.login);
       } else {
         reject(data);
       }
@@ -127,7 +127,7 @@ module.exports = function (app) {
             .then(function () {
               return authenticate(req, res);
             })
-            .then(function () {
+            .then(function (login) {
               var content = req.body;
               if (!content.uuid || !content.login || !content.message) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorMsg);
@@ -137,6 +137,8 @@ module.exports = function (app) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorUuidExistsMsg);
                 return;
               }
+              // Enforce login consistency
+              req.body.login = login;
               messageService.post(req.body);
               res.json(HttpUtils.messages.postSuccessfulMsg);
             });

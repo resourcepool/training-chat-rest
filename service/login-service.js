@@ -34,7 +34,10 @@ var register = function (login, password, callback) {
     callback(false);
     return;
   }
-
+  // Trim credentials
+  login = login.trim();
+  password = password.trim();
+  
   //Push data to news if relevant
   if (!users[login]) {
     console.log("Added user: " + login);
@@ -57,6 +60,10 @@ var login = function (login, password, callback) {
     callback(false, {"message": "Both Login and password fields are mandatory."});
     return;
   }
+  // Trim credentials
+  login = login.trim();
+  password = password.trim();
+  
   var success = true;
   var data = {"elements": [], "message": "Login or password incorrect"};
 
@@ -97,6 +104,9 @@ var findAll = function () {
  * @returns {boolean} true if admin, false otherwise
  */
 var isAdmin = function (login, password) {
+  // Trim credentials
+  login = login.trim();
+  password = password.trim();
   return (login === Conf.admin.login && password === Conf.admin.password);
 };
 

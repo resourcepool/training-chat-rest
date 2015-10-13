@@ -103,6 +103,8 @@ module.exports = function (app) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorUuidExistsMsg);
                 return;
               }
+              // Enforce login consistency
+              req.body.login = req.params.login;
               messageService.post(req.body);
               res.status(200).json(HttpUtils.messages.postSuccessfulMsg);
             }
