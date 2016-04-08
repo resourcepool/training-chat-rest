@@ -19,6 +19,8 @@ var supportedMimeTypes = {'image/jpg': 'jpg', 'image/jpeg': 'jpg', 'image/png': 
 var maxAttachments = Conf.maxAttachments;
 var messages = [];
 
+var observers = [];
+
 
 /**
  * Init method
@@ -26,6 +28,13 @@ var messages = [];
 var init = function () {
 };
 
+/**
+ * Add message-change observer
+ * @param o
+ */
+var addObserver = function(o) {
+  observers.push(o);
+};
 
 /**
  * Find all messages
@@ -58,8 +67,9 @@ var reset = function () {
 /**
  * Post message to the chat
  * @param data
+ * @param notify
  */
-var post = function (data) {
+var post = function (data, notify) {
   data = {'uuid': data.uuid, 'login': data.login, 'message': data.message, 'attachments': data.attachments};
   //Push data to news
   console.log("Received message from " + data.login + ": " + data.message);
@@ -81,6 +91,12 @@ var post = function (data) {
     messages.shift();
   }
   messages.push(data);
+  if (notify && observers) {
+    // Notify observers
+    observers.forEach(function(o) {
+      o(data);
+    });  
+  }
 };
 
 
@@ -118,5 +134,6 @@ module.exports = {
   "reset": reset,
   "findAll": findAll,
   "post": post,
-  "contains": contains
+  "contains": contains,
+  "addObserver": addObserver
 };

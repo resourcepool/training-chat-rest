@@ -105,7 +105,7 @@ module.exports = function (app) {
               }
               // Enforce login consistency
               req.body.login = req.params.login;
-              messageService.post(req.body);
+              messageService.post(req.body, true);
               res.status(200).json(HttpUtils.messages.postSuccessfulMsg);
             }
         );

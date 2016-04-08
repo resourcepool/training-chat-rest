@@ -15,6 +15,7 @@
 var loginService = require('../service/login-service');
 var messageService = require('../service/message-service');
 var fileService = require('../service/file-service');
+var securityService = require('../service/security-service');
 var HttpUtils = require('../util/http-utils');
 
 /**
@@ -139,7 +140,7 @@ module.exports = function (app) {
               }
               // Enforce login consistency
               req.body.login = login;
-              messageService.post(req.body);
+              messageService.post(req.body, true);
               res.json(HttpUtils.messages.postSuccessfulMsg);
             });
       });

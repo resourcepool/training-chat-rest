@@ -22,7 +22,7 @@ var SocketIO = require('socket.io');
 var AuthSuccessMsg = require('../websocket/auth-success-msg.js');
 var AuthFailedMsg = require('../websocket/auth-failed-msg.js');
 var AuthRequiredMsg = require('../websocket/auth-required-msg.js');
-var AuthTokenMsg = require('../websocket/auth-token-msg.js');
+var AuthTokenMsg = require('../websocket/auth-attempt-msg.js');
 var OutboundMsg = require('../websocket/outbound-msg.js');
 var InboundMsg = require('../websocket/inbound-msg.js');
 var BadRequestMsg = require('../websocket/bad-request-msg.js');
@@ -53,16 +53,16 @@ var authenticate = function (socket, credentials) {
   });
 };
 
+
 // Exports
 module.exports = function (server) {
 
 //-------------------------------------------------------------------------------
 // Websocket-API
 //-------------------------------------------------------------------------------
-  io = SocketIO(server);
+  io = SocketIO(server).of('/2.0/ws');
 
-  io.of('/2.0/ws')
-      .on('connection', function (socket) {
+  io.on('connection', function (socket) {
         console.log("New connection established");
         // Emit auth required message
         AuthRequiredMsg.emitOn(socket);
@@ -148,6 +148,11 @@ module.exports = function (server) {
           new InboundMsg(message).broadcastOn(socket);
         })
   }
+  
+  messageService.addObserver(function(message) {
+    // Broadcast message to active users
+    new InboundMsg(message).broadcast(io);
+  });
 
 //-------------------------------------------------------------------------------
 // ACTIVE USERS
