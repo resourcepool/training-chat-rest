@@ -1,5 +1,5 @@
 function Msg(users) {
-  this.event = 'active_users_update_msg';
+  this.event = 'active_users_update';
   this.users = users;
 }
 

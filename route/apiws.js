@@ -19,8 +19,8 @@ var HttpUtils = require('../util/http-utils');
 var HashMap = require('hashmap');
 var SocketIO = require('socket.io');
 
-var ConnectionSuccessMsg = require('../websocket/connection-success-msg.js');
-var ConnectionFailedMsg = require('../websocket/connection-failed-msg.js');
+var AuthSuccessMsg = require('../websocket/auth-success-msg.js');
+var AuthFailedMsg = require('../websocket/auth-failed-msg.js');
 var AuthRequiredMsg = require('../websocket/auth-required-msg.js');
 var AuthTokenMsg = require('../websocket/auth-token-msg.js');
 var OutboundMsg = require('../websocket/outbound-msg.js');
@@ -34,7 +34,7 @@ var io;
 var activeClients = new HashMap();
 
 /**
- * Proceed authentication with Http Basic Auth
+ * Proceed authentication with Token-based Auth
  * @param socket the client socket
  * @param credentials the credentials (token and login)
  * @returns {*} a promise which will be resolved only if auth is successful
@@ -49,7 +49,7 @@ var authenticate = function (socket, credentials) {
   }).catch(function () {
     console.log("Auth failed");
     // Login failure. Notify client
-    ConnectionFailedMsg.emitOn(socket);
+    AuthFailedMsg.emitOn(socket);
   });
 };
 
@@ -73,7 +73,7 @@ module.exports = function (server) {
         socket.on('outbound_msg', function (payload) {
           handleOutboundMessage(payload, socket);
         });
-        socket.on('active_users_request_msg', function (payload) {
+        socket.on('active_users_request', function (payload) {
           handleActiveUsersMessage(payload, socket);
         });
         socket.on('end', function(payload) {
@@ -101,7 +101,7 @@ module.exports = function (server) {
         activeClients.set(credentials.login, socket);
         
         // Login success. Add ws to list and emit success msg
-        new ConnectionSuccessMsg(credentials.login, token).emitOn(socket);
+        new AuthSuccessMsg(credentials.login, token).emitOn(socket);
         
         // Broadcast active users
         new ActiveUsersUpdate(activeClients.keys()).broadcastOn(socket);
@@ -115,7 +115,7 @@ module.exports = function (server) {
       } else {
         console.log("Auth failed");
         // Login failure. Notify client
-        ConnectionFailedMsg.emitOn(socket);
+        AuthFailedMsg.emitOn(socket);
         // FIXME should we close socket?
       }
     });

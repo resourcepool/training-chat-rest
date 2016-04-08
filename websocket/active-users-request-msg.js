@@ -1,6 +1,6 @@
 
 function Msg(data) {
-  this.event = 'active_users_request_msg';
+  this.event = 'active_users_request';
   this.login = data.login;
   this.token = data.token;
 }

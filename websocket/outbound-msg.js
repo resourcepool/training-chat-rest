@@ -1,6 +1,6 @@
 
 function Msg(data) {
-  this.event = 'inbound_msg';
+  this.event = 'outbound_msg';
   this.login = data.login;
   this.uuid = data.uuid;
   this.token = data.token;

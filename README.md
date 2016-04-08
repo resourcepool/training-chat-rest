@@ -16,7 +16,7 @@ An example instance was published on the following baseURL: http://training.loic
 
 ### 1.0
 ---------------
-versionPrefix: 1.0
+**versionPrefix: 1.0**
 
 This API has permissive request Content-Types, and is best fit for beginners.
 
@@ -29,7 +29,7 @@ This API has permissive request Content-Types, and is best fit for beginners.
 
 ### 2.0
 ---------------
-versionPrefix: 2.0
+**versionPrefix: 2.0**
 
 This API performs authentication using basic authentication (more info: https://en.wikipedia.org/wiki/Basic_access_authentication)  
 The API searches for Content-Type:application/json header when required, and is best fit for advanced use.
@@ -42,6 +42,23 @@ The API searches for Content-Type:application/json header when required, and is 
 | <ul><li>**Route**: ``/messages``</li><li>**Method:** ``POST``</li><li>Post new message to chat service API</li></ul> | <br/>**Warning: requires Basic Authentication!** <br/>**Request body:** {"uuid":"...","login":"jane","message":"Pong!", "attachments": [{"mimeType": "image/png", "data": "yourbase64imagecontenthere"}]} <br/>**Warning: uuid is mandatory and should be a valid generated uuid!**<br/>**NB: attachments is not a mandatory field. it can hold image/png or image/jpg content. Warning, size is limited to 1024kb by default.**<br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Message posted successfully"} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if any mandatory body fields are absent/invalid or if message has already been posted.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> | 
 | <ul><li>**Route:** ``/files/{uuid}/{fileName}``</li><li>**Method:** ``GET``</li><li>**Description:** Retrieve file posted along depending on the file extension.</li></ul> |  <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>image/* response if everything went well.</td></tr><tr><td>404-NOT-FOUND</td><td>if image does not exist.</td></tr></table> |
 
+### Websocket API
+**versionPrefix: 2.0/ws**
+
+This API allows the use of websockets to enhance real-time experience for users.  
+The Websocket API uses Socket.io as an implementation.
+
+| Event | Payload & Outcomes |
+| ----- | ------ | ----------- | ------- |
+| <ul><li>**Event:** ``auth_required``</li><li>**Source:** ``SERVER``</li><li>**Description:** Once connection is established, server tells client authentication is required.</li></ul> |  None |
+| <ul><li>**Event:** ``auth_attempt``</li><li>**Source:** ``CLIENT``</li><li>**Description:** Client attempts to authenticate to the server.</li></ul> | <br/>**Payload:** {"login":"foo","password":"bar"} <br/><table><tr><th>Status</th><th>Payload</th></tr><tr><td>Success</td><td>Server will emit **auth_success** and **active_users_update** if everything went well.</td></tr><tr><td>Failure</td><td>Server will emit **auth_failed** if credentials are wrong.</td></tr></table> |
+| <ul><li>**Event:** ``auth_success``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server notifies client its authentication was successful, and returns the session-token.</li></ul> | <br/>**Payload:** {"login":"foo","token":"session-token1234","message": "Authentication successful"} |
+| <ul><li>**Event:** ``auth_failed``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server notifies client its authentication has failed.</li></ul> | None |
+| <ul><li>**Event:** ``outbound_msg``</li><li>**Source:** ``CLIENT``</li><li>**Description:** Client sends a new message.</li></ul> | <br/>**Payload:** {"login":"foo","token":"session-token1234","uuid":"message-uuid-1234","message": "Hello World!"} <br/><table><tr><th>Status</th><th>Payload</th></tr><tr><td>Success</td><td>Server will emit **post_success_msg** and broadcast **inbound_msg** if everything went well.</td></tr><tr><td>Failure</td><td>Server will emit **bad_request_msg** if credentials or message structure are wrong.</td></tr></table> |
+| <ul><li>**Event:** ``inbound_msg``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server notifies clients a new message was sent.</li></ul> | <br/>**Payload:** {"login":"foo","uuid":"message-uuid-1234","message": "Hello World!"}  |
+| <ul><li>**Event:** ``post_success_msg``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server notifies emitter-client its message was successfully sent.</li></ul> | <br/>**Payload:** {"uuid":"message-uuid-1234"}  |
+| <ul><li>**Event:** ``bad_request_msg``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server notifies emitter-client its message was not sent.</li></ul> | <br/>**Payload:** String message with the error reason.  |
+| <ul><li>**Event:** ``active_users_update``</li><li>**Source:** ``SERVER``</li><li>**Description:** Server broadcasts the list of active users to clients. This event is fired everytime the list of connected users changes.</li></ul> | <br/>**Payload:** ["user1", "user2", "john", "jane"]  |
 
 ### Register / Dashboard pages
 ---------------
