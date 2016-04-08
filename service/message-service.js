@@ -87,8 +87,8 @@ var post = function (data, notify) {
     for (var i = 0; i < Math.min(data.attachments.length, maxAttachments); i++) {
       var attachment = data.attachments[i];
       if (isSupportedMimeType(attachment.mimeType)) {
-        fileService.store(data.uuid, attachment);
-        attachmentsUrls.push(Conf.server.baseUrl + '/2.0/files/' + data.uuid + '/' + i + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()]);
+        fileService.store('msg-' + data.uuid, attachment);
+        attachmentsUrls.push(Conf.server.baseUrl + '/2.0/files/msg-' + data.uuid + '/' + i + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()]);
       }
     }
     data.attachments = undefined;

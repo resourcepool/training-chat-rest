@@ -45,7 +45,7 @@ var store = function (uuid, attachment) {
  * @returns {*|boolean} true if the attachments contain the element or false otherwise.
  */
 var contains = function (uuid, element) {
-  return attachments[uuid] && attachments[uuid].length > element;
+  return attachments[uuid] && attachments[uuid].length > (element || 0);
 };
 
 /**
@@ -55,7 +55,7 @@ var contains = function (uuid, element) {
  * @returns {*} the attachment
  */
 var retrieve = function (uuid, element) {
-  return attachments[uuid][element];
+  return attachments[uuid][element || 0];
 };
 
 // Initialize service

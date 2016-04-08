@@ -12,7 +12,7 @@
  */
 
 // Services
-var loginService = require('../service/login-service');
+var userService = require('../service/login-service');
 var messageService = require('../service/message-service');
 var fileService = require('../service/file-service');
 var securityService = require('../service/security-service');
@@ -32,7 +32,7 @@ var authenticate = function (req, res) {
     var token = header.split(/\s+/).pop() || '';
     var credentials = parseCredentials(token);
 
-    loginService.login(credentials.login, credentials.password, function (success, data) {
+    userService.login(credentials.login, credentials.password, function (success, data) {
       if (success) {
         resolve(credentials.login);
       } else {
@@ -40,8 +40,8 @@ var authenticate = function (req, res) {
       }
     });
   }).catch(function (data) {
-        HttpUtils.rejectUnauthorized(res, {"status": 401, "message": data.message, "elements": data.elements}, true);
-      });
+    HttpUtils.rejectUnauthorized(res, {"status": 401, "message": data.message, "elements": data.elements}, true);
+  });
 };
 
 /**
@@ -69,8 +69,8 @@ var checkHeaders = function (req, res) {
       resolve();
     }
   }).catch(function () {
-        HttpUtils.rejectBadRequest(res, HttpUtils.messages.wrongHeadersErrorMsg);
-      });
+    HttpUtils.rejectBadRequest(res, HttpUtils.messages.wrongHeadersErrorMsg);
+  });
 };
 
 // Exports
@@ -88,7 +88,7 @@ module.exports = function (app) {
         checkHeaders(req, res)
             .then(function () {
               var credentials = req.body || {};
-              loginService.register(credentials.login, credentials.password, function (success, data) {
+              userService.register(credentials.login, credentials.password, function (success, data) {
                 if (success) {
                   res.json(HttpUtils.messages.registerSuccessfulMsg);
                   return;
@@ -109,6 +109,37 @@ module.exports = function (app) {
         authenticate(req, res)
             .then(function () {
               res.json(HttpUtils.messages.loginSuccessfulMsg);
+            });
+      });
+
+//-------------------------------------------------------------------------------
+// PROFILE
+//-------------------------------------------------------------------------------
+  app.route('/2.0/profile/:login')
+      .get(function (req, res) {
+        authenticate(req, res)
+            .then(function (login) {
+              res.json(userService.findOne(req.params.login));
+            });
+      });
+
+  app.route('/2.0/profile')
+      .post(function (req, res) {
+        checkHeaders(req, res)
+            .then(function () {
+              return authenticate(req, res);
+            })
+            .then(function (login) {
+              var content = req.body;
+              // Enforce login consistency
+              content.login = login;
+              if (!content.password && !content.picture && !content.email) {
+                HttpUtils.rejectBadRequest(res, HttpUtils.messages.profileUpdateErrorMsg);
+                return;
+              }
+              userService.updateProfile(content, function (newProfile) {
+                res.json(newProfile);
+              });
             });
       });
 
@@ -160,7 +191,20 @@ module.exports = function (app) {
               res.send(new Buffer(attachment.data, 'base64'));
             });
       });
-  
+
+  app.route('/2.0/files/:uuid.:ext')
+      .get(function (req, res) {
+        authenticate(req, res)
+            .then(function () {
+              if (!fileService.contains(req.params.uuid)) {
+                HttpUtils.rejectNotFound(res, HttpUtils.messages.noSuchElement);
+              }
+              var attachment = fileService.retrieve(req.params.uuid);
+              res.setHeader('Content-Type', attachment.mimeType);
+              res.send(new Buffer(attachment.data, 'base64'));
+            });
+      });
+
 //-------------------------------------------------------------------------------
 // ADMIN
 //-------------------------------------------------------------------------------
@@ -169,8 +213,8 @@ module.exports = function (app) {
         var header = req.headers['authorization'] || '';
         var token = header.split(/\s+/).pop() || '';
         var credentials = parseCredentials(token);
-        if (loginService.isAdmin(credentials.login, credentials.password)) {
-          var users = loginService.findAll();
+        if (userService.isAdmin(credentials.login, credentials.password)) {
+          var users = userService.findAll();
           res.json(users);
           return;
         }
@@ -182,8 +226,8 @@ module.exports = function (app) {
         var header = req.headers['authorization'] || '';
         var token = header.split(/\s+/).pop() || '';
         var credentials = parseCredentials(token);
-        if (loginService.isAdmin(credentials.login, credentials.password)) {
-          loginService.reset();
+        if (userService.isAdmin(credentials.login, credentials.password)) {
+          userService.reset();
           messageService.reset();
           fileService.reset();
           res.json(HttpUtils.messages.operationSuccessMsg);

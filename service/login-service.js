@@ -12,6 +12,11 @@
  */
 // Conf
 var Conf = require('../conf/conf');
+// Imports
+var fileService = require('./file-service');
+
+var supportedMimeTypes = {'image/jpg': 'jpg', 'image/jpeg': 'jpg', 'image/png': 'png'};
+var maxAttachments = Conf.maxAttachments;
 
 // Global variables
 var users = {};
@@ -20,7 +25,7 @@ var users = {};
  * Init method
  */
 var init = function () {
-  users[Conf.admin.login] = Conf.admin.password;
+  users[Conf.admin.login] = {"password": Conf.admin.password};
 };
 
 /**
@@ -41,7 +46,7 @@ var register = function (login, password, callback) {
   //Push data to news if relevant
   if (!users[login]) {
     console.log("Added user: " + login);
-    users[login] = password;
+    users[login] = {"password": password};
     callback(true);
   } else {
     console.log("User already exists: " + login);
@@ -70,11 +75,44 @@ var login = function (login, password, callback) {
   if (!users[login]) {
     success = false;
     data.elements.push('login');
-  } else if (users[login] != password) {
+  } else if (users[login].password != password) {
     success = false;
     data.elements.push('password');
   }
   callback(success, success ? null : data);
+};
+
+/**
+ * Attempt to update profile settings (email, password, etc...)
+ * @param profile the user profile
+ * @param callback to be called with result
+ */
+var updateProfile = function (profile, callback) {
+  var update = {
+    elements : []
+  };
+  var userProfile = users[profile.login];
+  if (profile.password && userProfile.password != profile.password) {
+    // If password has been updated
+    userProfile.password = profile.password;
+    update.elements.push('password');
+  }
+  if (profile.picture) {
+    // If picture has been updated
+    var attachment = profile.picture;
+    if (isSupportedMimeType(attachment.mimeType)) {
+      fileService.store('usr-' + profile.login, attachment);
+      update.picture = Conf.server.baseUrl + '/2.0/files/usr-' + profile.login + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()];
+      update.elements.push('picture');
+      userProfile.picture = update.picture;
+    }
+  }
+  if (userProfile.email != profile.email) {
+    // If email has been updated
+    userProfile.email = profile.email;
+    update.elements.push('email');
+  }
+  callback(update);
 };
 
 /**
@@ -87,14 +125,26 @@ var reset = function() {
 
 /**
  * Find all users
- * @returns {Array}
  */
 var findAll = function () {
-  var result = [];
+  var results = [];
   for (var user in users) {
-    result.push(user);
+    results.push({login: user, picture: users[user].picture, email: users[user].email});
   }
-  return result;
+  return results;
+};
+
+/**
+ * Find all users
+ * @param login the user login
+ * @returns Object
+ */
+var findOne = function (login) {
+  var u = users[login];
+  if (u) {
+    return {login: login, picture: u.picture, email: u.email};
+  }
+  return null;
 };
 
 /**
@@ -105,9 +155,20 @@ var findAll = function () {
  */
 var isAdmin = function (login, password) {
   // Trim credentials
-  login = login.trim();
-  password = password.trim();
+  login = login ? login.trim() : undefined;
+  password = password ? password.trim() : undefined;
   return (login === Conf.admin.login && password === Conf.admin.password);
+};
+
+
+/**
+ * Check whether mime type is supported or not
+ * @param mimeType the file mime type
+ * @returns {boolean} true if supported, false otherwise
+ */
+var isSupportedMimeType = function (mimeType) {
+  mimeType = mimeType.toLowerCase();
+  return supportedMimeTypes.hasOwnProperty(mimeType);
 };
 
 // Initialize service
@@ -120,5 +181,7 @@ module.exports = {
   "register": register,
   "reset": reset,
   "findAll": findAll,
-  "isAdmin": isAdmin
+  "findOne": findOne,
+  "isAdmin": isAdmin,
+  "updateProfile": updateProfile
 };

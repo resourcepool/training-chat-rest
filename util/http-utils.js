@@ -29,6 +29,7 @@ messages.wrongHeadersErrorMsg = {"status": 400, "message": "Please provide the C
 messages.registerSuccessfulMsg = {"status": 200, "message": "Registered successfully"};
 messages.loginSuccessfulMsg = {"status": 200, "message": "Login successful"};
 messages.postSuccessfulMsg = {"status": 200, "message": "Message posted successfully"};
+messages.profileUpdateErrorMsg = {"status": 400, "message": "Bad structure of profile update: should at least contain a password, a picture, or an email. "};
 messages.postErrorMsg = {"status": 400, "message": "Bad structure of message: should at least contain a login, an uuid and a message. Example: {\"uuid\":\"550e8400-e29b-41d4-a716-446655440000\", \"login\":\"foo\", \"message\": \"bar\"}"};
 messages.postErrorUuidExistsMsg = {"status": 400, "message": "Your message has already been posted."};
 messages.noSuchElement = {"status": 404, "message": "The following attachment does not exist."};
