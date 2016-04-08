@@ -36,7 +36,7 @@ var authenticate = function (req, res) {
 
     loginService.login(credentials.login, credentials.password, function (success, data) {
       if (success) {
-        resolve();
+        resolve(credentials.login);
       } else {
         reject(data);
       }
@@ -73,7 +73,7 @@ module.exports = function (app) {
   app.route('/1.0/connect/:login/:password')
       .get(function (req, res) {
         authenticate(req, res)
-            .then(function () {
+            .then(function (login) {
               res.status(200).json(HttpUtils.messages.loginSuccessfulMsg);
             }
         );
@@ -93,8 +93,10 @@ module.exports = function (app) {
       })
       .post(function (req, res) {
         authenticate(req, res)
-            .then(function () {
+            .then(function (login) {
               var content = req.body;
+              // Enforce login consistency
+              content.login = login;
               if (!content.uuid || !content.login || !content.message) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorMsg);
                 return;

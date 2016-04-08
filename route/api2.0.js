@@ -130,6 +130,8 @@ module.exports = function (app) {
             })
             .then(function (login) {
               var content = req.body;
+              // Enforce login consistency
+              content.login = login;
               if (!content.uuid || !content.login || !content.message) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorMsg);
                 return;
@@ -138,9 +140,7 @@ module.exports = function (app) {
                 HttpUtils.rejectBadRequest(res, HttpUtils.messages.postErrorUuidExistsMsg);
                 return;
               }
-              // Enforce login consistency
-              req.body.login = login;
-              messageService.post(req.body, true);
+              messageService.post(content, true);
               res.json(HttpUtils.messages.postSuccessfulMsg);
             });
       });
