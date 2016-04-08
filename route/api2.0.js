@@ -119,7 +119,7 @@ module.exports = function (app) {
       .get(function (req, res) {
         authenticate(req, res)
             .then(function () {
-              var messages = messageService.findAll(req.query.limit, req.query.offset);
+              var messages = messageService.findAll(req.query.head, req.query.limit, req.query.offset);
               res.json(messages);
             });
       })

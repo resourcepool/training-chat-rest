@@ -40,12 +40,20 @@ var addObserver = function(o) {
  * Find all messages
  * @returns {Array}
  */
-var findAll = function (limit, offset) {
+var findAll = function (head, limit, offset) {
   if (!limit || limit <= 0) {
     limit = Conf.maxMessagesResults;
   }
   if (!offset || offset < 0) {
     offset = 0;
+  }
+  if (head) {
+    for (var i = 0; i < messages.length; i++) {
+      var m = messages[i];
+      if (m.uuid === head) {
+        offset += messages.length - i - 1;
+      }
+    }
   }
   // If we have a valid limit and offset
   // If offset is bigger than messages length, return empty array
