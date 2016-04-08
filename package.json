@@ -24,7 +24,10 @@
     "gulp-usemin": "^0.3.14",
     "gulp-watch": "^4.3.5",
     "main-bower-files": "^2.9.0",
-    "vinyl-paths": "^2.0.0"
+    "vinyl-paths": "^2.0.0",
+    "hashmap": "2.0.4",
+    "socket.io": "1.4.5",
+    "node-uuid": "1.4.7"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

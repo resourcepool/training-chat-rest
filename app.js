@@ -48,3 +48,6 @@ var server = app.listen(Conf.server.port, function () {
   var port = server.address().port;
   console.log('Chat REST Application listening at http://%s:%s', host, port);
 });
+
+// Add websocket handler
+require('./route/apiws')(server);

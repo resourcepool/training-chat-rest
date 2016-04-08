@@ -21,7 +21,7 @@ module.exports = function (app, staticRoot, viewsRoot) {
 //-------------------------------------------------------------------------------
   // Static files
   app.use(express.static(staticRoot));
-
+  
   app.route('/')
       .get(function (req, res) {
         res.sendFile(viewsRoot + '/register.html');
