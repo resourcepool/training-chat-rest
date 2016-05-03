@@ -101,7 +101,7 @@ var updateProfile = function (profile, callback) {
     // If picture has been updated
     var attachment = profile.picture;
     if (isSupportedMimeType(attachment.mimeType)) {
-      fileService.store('usr-' + profile.login, attachment);
+      fileService.storeProfile(profile.login, attachment);
       update.picture = Conf.server.baseUrl + '/2.0/files/usr-' + profile.login + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()];
       update.elements.push('picture');
       userProfile.picture = update.picture;

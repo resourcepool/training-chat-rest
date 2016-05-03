@@ -40,6 +40,17 @@ var store = function (uuid, attachment) {
 };
 
 /**
+ * Store profile picture
+ * @param login the user login
+ * @param attachment the attachment
+ */
+var storeProfile = function (login, attachment) {
+  var key = 'usr-' + login;
+  attachments[key] = [];
+  attachments[key].push(attachment);
+};
+
+/**
  * @param uuid 
  * @param element
  * @returns {*|boolean} true if the attachments contain the element or false otherwise.
@@ -67,5 +78,6 @@ module.exports = {
   "reset": reset,
   "retrieve": retrieve,
   "store": store,
+  "storeProfile": storeProfile,
   "contains": contains
 };
