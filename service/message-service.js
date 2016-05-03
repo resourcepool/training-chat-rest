@@ -91,9 +91,9 @@ var post = function (data, notify) {
         attachmentsUrls.push(Conf.server.baseUrl + '/2.0/files/msg-' + data.uuid + '/' + i + '.' + supportedMimeTypes[attachment.mimeType.toLowerCase()]);
       }
     }
-    data.attachments = undefined;
     data.images = attachmentsUrls;
   }
+  delete data.attachments;
   // Remove oldest messages when maximum size is reached
   if (messages.length === Conf.maxMessagesInQueue) {
     messages.shift();
