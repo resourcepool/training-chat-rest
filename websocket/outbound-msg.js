@@ -1,5 +1,5 @@
 
-function Msg(data) {
+function Msg(payload) {
   this.event = 'outbound_msg';
   this.login = data.login;
   this.uuid = data.uuid;
@@ -8,6 +8,9 @@ function Msg(data) {
 }
 
 Msg.parse = function(payload) {
+  if (typeof payload != 'object') {
+    payload = JSON.parse(payload);
+  }
   return new Msg(payload);
 };
 

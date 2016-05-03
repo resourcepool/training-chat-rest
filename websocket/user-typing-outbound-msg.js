@@ -6,6 +6,9 @@ function Msg(data) {
 }
 
 Msg.parse = function(payload) {
+  if (typeof payload != 'object') {
+    payload = JSON.parse(payload);
+  }
   return new Msg(payload);
 };
 
