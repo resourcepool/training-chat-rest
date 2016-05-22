@@ -19,5 +19,5 @@ module.exports = {
   "maxMessageSizeInKb": 1024,
   "maxMessagesInQueue": 1000,
   "maxMessagesResults": 3,
-  "server": {"baseUrl": "http://localhost", "port": 9000}
+  "server": {scheme: "http", host: "localhost", path: "", "port": 9000}
 };

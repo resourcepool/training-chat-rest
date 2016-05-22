@@ -1,0 +1,224 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Chat-Rest API
+  description: Training API (level 1) of a RESTful Chat system by Loïc Ortola
+  contact:
+   name: Loïc Ortola
+   url: https://github.com/loicortola/training-chat-rest/issues
+  version: '1.0'
+  license:
+   name: Apache 2.0
+   url: http://www.apache.org/licenses/LICENSE-2.0.html
+# the domain of the service
+host: training.loicortola.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /chat-rest/1.0
+consumes:
+  - application/json
+produces:
+  - application/json
+  - image/png
+paths:
+  /register/{login}/{password}:
+    post:
+      summary: Register new user
+      description: | 
+        Register new user to chat service through API.
+        Registration will fail if user already exists.
+      parameters:
+        - name: login
+          in: path
+          description: The user login (utf-8, urlencoded)
+          required: true
+          type: string
+          format: string
+        - name: password
+          in: path
+          description: The user password (utf-8, urlencoded)
+          required: true
+          type: string
+          format: password
+      tags:
+        - User
+        - Registration
+      responses:
+        200:
+          description: Registration successful
+          schema:
+            $ref: '#/definitions/Response'
+        400:
+          description: 'Registration failed: User already exists'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /connect/{login}/{password}:
+    get:
+      summary: Perform connection check
+      description: |
+        Attempt to connect a user to chat service through API.
+      parameters:
+        - name: login
+          in: path
+          description: The user login (utf-8, urlencoded)
+          required: true
+          type: string
+          format: string
+        - name: password
+          in: path
+          description: User password (utf-8, urlencoded)
+          required: true
+          type: string
+          format: password
+      tags:
+        - User
+        - Connection
+      responses:
+        200:
+          description: Connection successful
+          schema:
+            $ref: '#/definitions/Response'
+        401:
+          description: 'Connection failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /messages/{login}/{password}:
+    get:
+      summary: Retrieve messages
+      description: |
+        Retrieve all posted messages from chat service.
+      parameters:
+        - name: login
+          in: path
+          description: The user login (utf-8, urlencoded)
+          required: true
+          type: string
+          format: string
+        - name: password
+          in: path
+          description: User password (utf-8, urlencoded)
+          required: true
+          type: string
+          format: password
+      tags:
+        - Messages
+      responses:
+        200:
+          description: Messaged retrieved successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SimpleChatMessage'
+        401:
+          description: 'Request failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+    post:
+      summary: Post message
+      description: |
+        Post a new message to chat service.
+        Requires the message uuid and login to be set client-side.
+      parameters:
+        - name: login
+          in: path
+          description: The user login (utf-8, urlencoded)
+          required: true
+          type: string
+          format: string
+        - name: password
+          in: path
+          description: User password (utf-8, urlencoded)
+          required: true
+          type: string
+          format: password
+        - name: message
+          in: body
+          description: The JSON message to post
+          required: true
+          schema:
+            $ref: '#/definitions/SimpleChatMessage'
+      tags:
+        - Messages
+      responses:
+        200:
+          description: Messaged retrieved successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SimpleChatMessage'
+        400:
+          description: 'Request failed: Message structure in body is not valid. Make sure that uuid, login and message were provided correctly'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        401:
+          description: 'Request failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+    
+definitions:
+  SimpleChatMessage:
+    description: The most basic form of a message sent through the chat.
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: uuid
+        description: An unique identifier for the message. Should be set client-side.
+      login:
+        type: string
+        format: string
+        description: The login of the sender.
+      message:
+        type: string
+        format: string
+        description: The content of the message.
+    required:
+      - uuid
+      - login
+      - message
+  Response:
+    description: A JSON Representation of most HTTP Responses of the API.
+    type: object
+    properties:
+      status:
+        type: integer
+        format: int32
+        description: Represents the HTTP status code of the HTTP Response. Is always equal to the real HTTP Response Status code.
+      message:
+        type: string
+        description: Optional reason message (in english).
+    required:
+      - status
+  ResponseWithElements:
+    description: Cat
+    allOf:
+      - $ref: '#/definitions/Response'
+      - type: object
+        properties:
+          elements:
+            type: array
+            items:
+              type: string
+            description: 'Array of string keys. Identifies which specific elements are concerned. i.e.: which fields were not valid in the form.' 
+        required:
+          - elements
+      

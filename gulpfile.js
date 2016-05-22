@@ -19,6 +19,13 @@ var usemin = require('gulp-usemin');
 var uglify = require('gulp-uglify');
 var minifyCss = require('gulp-minify-css');
 var minifyHtml = require('gulp-minify-html');
+var request = require('request');
+var replace = require('gulp-replace');
+var rename = require("gulp-rename");
+var SwaggerParser = require('swagger-parser');
+var fs = require('fs');
+var Conf = require('./conf/conf.js.release');
+
 var serve = require('gulp-serve');
 var watch = require('gulp-watch');
 var debug = require('gulp-debug');
@@ -65,6 +72,47 @@ gulp.task('moveHtml', ['usemin'], function () {
       .pipe(gulp.dest('views'));
 });
 
+// Convert Swagger json spec from actual yaml
+gulp.task('swaggerConvert', function () {
+  var swaggerSrc = 'swagger';
+  var swaggerDst = 'public/swagger';
+  var swaggerBasePath = Conf.server.scheme + '://' + Conf.server.host + ':' + Conf.server.port + Conf.server.path + '/swagger';
+  
+  // Copy swagger static ui to destination
+  gulp.src(swaggerSrc + '/ui/**')
+      .pipe(gulp.dest(swaggerDst));
+
+  // Convert each spec
+  fs.readdir(swaggerSrc, function (err, data) {
+    data.forEach(function (f) {
+      if (f.endsWith(".yaml")) {
+        // For each yaml, validate it against the Swagger spec with parser
+        SwaggerParser.validate(swaggerSrc + '/' + f, {
+          $refs: {
+            internal: false   // Don't dereference internal $refs, only external
+          }
+        }).then(function (api) {
+          // Parsing success, output to dist directory
+          var version = f.substr(0, f.length - ".yaml".length);
+          var specFile = version + ".json";
+          var staticFile = version + ".html";
+          fs.writeFileSync(swaggerDst + '/' + specFile, JSON.stringify(api));
+          console.log("Swagger spec " + specFile + " converted successfully.");
+          // Now create relevant static file from template
+          gulp.src([swaggerSrc + '/ui/template.html'])
+              .pipe(replace('{swaggerPath}', swaggerBasePath + '/' + specFile))
+              .pipe(rename(staticFile))
+              .pipe(gulp.dest(swaggerDst));
+        });
+      }
+
+    });
+
+  });
+
+
+});
+
 // Servers
 gulp.task('server-dev', serve('public'));
 gulp.task('server-prod', serve({
@@ -87,6 +135,9 @@ gulp.task('watch', function () {
 
 // Default does a public
 gulp.task('default', ['public']);
+
+// Release does a public + swagger conversion
+gulp.task('release', ['public', 'swaggerConvert']);
 
 // Serve publics, launches a dev server, and watches
 gulp.task('serve', ['public', 'server-dev', 'watch']);

@@ -14,6 +14,7 @@
 var Conf = require('./conf/conf');
 // Node Misc
 var express = require('express');
+var cors = require('cors');
 var bodyParser = require('body-parser');
 
 //-------------------------------------------------------------------------------
@@ -21,6 +22,10 @@ var bodyParser = require('body-parser');
 //-------------------------------------------------------------------------------
 // Init express
 var app = express();
+
+// Cors
+app.use(cors());
+
 // Json parser
 app.use(bodyParser.json({"limit": Conf.maxMessageSizeInKb * 1024}));
 
@@ -32,16 +37,11 @@ require('./route/index')(app, staticRoot, viewsRoot);
 require('./route/api1.0')(app);
 require('./route/api2.0')(app);
 
-// CORS Filter
-app.all('*', function (req, res, next) {
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 //-------------------------------------------------------------------------------
 // LAUNCH SERVER
 //-------------------------------------------------------------------------------
+Conf.server.baseUrl = Conf.server.scheme + '://' + Conf.server.host + ':' + Conf.server.port + Conf.server.path;
+
 var server = app.listen(Conf.server.port, function () {
 
   var host = server.address().address;

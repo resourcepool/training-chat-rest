@@ -1,3 +1,4 @@
+.DS_Store
 dist
 .idea
 .sass-cache
@@ -7,3 +8,4 @@ nohup.out
 public
 /views
 bower_components
+conf/conf.js.release
