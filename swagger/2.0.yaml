@@ -1,0 +1,440 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Chat-Rest API
+  description: Training API (level 2) of a RESTful Chat system by Loïc Ortola
+  contact:
+   name: Loïc Ortola
+   url: https://github.com/loicortola/training-chat-rest/issues
+  version: '2.0'
+  license:
+   name: Apache 2.0
+   url: http://www.apache.org/licenses/LICENSE-2.0.html
+# the domain of the service
+host: training.loicortola.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /chat-rest/2.0
+consumes:
+  - application/json
+produces:
+  - application/json
+  - image/png
+securityDefinitions:
+  Bearer:
+    type: basic
+paths:
+  /register:
+    post:
+      summary: Register new user
+      description: | 
+        Register new user to chat service through API.
+        Registration will fail if user already exists.
+      security:
+        - Bearer: []
+      parameters:
+        - name: credentials
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserRegistration'
+      tags:
+        - User
+        - Registration
+      responses:
+        200:
+          description: Registration successful
+          schema:
+            $ref: '#/definitions/Response'
+        400:
+          description: 'Registration failed: User already exists'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /connect:
+    get:
+      summary: Perform connection check
+      description: |
+        Attempt to connect a user to chat service through API.
+      security:
+        - Bearer: []
+      tags:
+        - User
+        - Connection
+      responses:
+        200:
+          description: Connection successful
+          schema:
+            $ref: '#/definitions/Response'
+        401:
+          description: 'Connection failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /profile/{login}:
+    get:
+      summary: Retrieve a user profile
+      description: |
+        Retrieve all profile details (email, picture...) of a particular user through API.
+      security:
+        - Bearer: []
+      parameters:
+        - name: login
+          in: path
+          description: The user login (utf-8, urlencoded)
+          required: true
+          type: string
+          format: string
+      tags:
+        - User
+        - Profile
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+        401:
+          description: 'Connection failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        404:
+          description: 'The user you are trying to get the profile information of does not exist'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /profile:
+    post:
+      summary: Update profile
+      description: |
+        Update self user profile (email, picture, password).
+      security:
+        - Bearer: []
+      parameters:
+        - name: profile
+          in: body
+          description: The user profile elements to update
+          required: true
+          schema:
+            $ref: '#/definitions/UserProfileUpdate'
+      tags:
+        - User
+        - Profile
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: 'Request was not filled out properly'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        401:
+          description: 'Connection failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /messages:
+    get:
+      summary: Retrieve messages
+      description: |
+        Retrieve filtered messages from chat service.
+      security:
+        - Bearer: []
+      parameters:
+        - name: limit
+          in: query
+          description: The number of messages to retrieve
+          default: 20
+          type: integer
+          format: int32
+        - name: offset
+          in: query
+          description: The messages offset (from latest message)
+          default: 0
+          type: integer
+          format: int32
+        - name: head
+          in: query
+          description: Retrieve messages posted before that one. Allows to position a head message for infinite-scroll purposes.
+          type: string
+          format: uuid
+      tags:
+        - Messages
+      responses:
+        200:
+          description: Messaged retrieved successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MultimediaChatMessage'
+        401:
+          description: 'Request failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+    post:
+      summary: Post message
+      description: |
+        Post a new message to chat service.
+        Requires the message uuid and login to be set client-side.
+      security:
+        - Bearer: []
+      parameters:
+        - name: message
+          in: body
+          description: The message to post
+          required: true
+          schema:
+            $ref: '#/definitions/MultimediaPostChatMessage'
+      tags:
+        - Messages
+      responses:
+        200:
+          description: Messaged retrieved successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MultimediaChatMessage'
+        400:
+          description: 'Request failed: Message structure in body is not valid. Make sure that uuid, login and message were provided correctly. Warning: uuid is mandatory and should be a valid generated uuid. Attachments is not a mandatory field. It can hold image/png or image/jpg content. Warning: total size is limited to a payload of 1024kb by default.'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        401:
+          description: 'Request failed: User does not exist or provided password is incorrect'
+          schema:
+            $ref: '#/definitions/ResponseWithElements'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /files/{uuid}/{filename}:
+    get:
+      summary: Retrieve attachment.
+      description: |
+        Retrieve an attachment posted along with a message.
+      parameters:
+        - name: uuid
+          in: path
+          description: The attachment uuid
+          required: true
+          type: string
+          format: string
+        - name: filename
+          in: path
+          description: The file name
+          required: true
+          type: string
+          format: string
+      tags:
+        - Messages
+        - Images
+        - Files
+      produces:
+        - image/*
+        - application/json
+      responses:
+        200:
+          description: File data retrieved successfully
+          schema:
+            type: string
+            format: binary
+        404:
+          description: 'File not found'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+  /files/{filename}:
+    get:
+      summary: Retrieve profile picture.
+      description: |
+        Retrieve the profile picture of a particular user.
+      parameters:
+        - name: filename
+          in: path
+          description: The profile picture file name.
+          required: true
+          type: string
+          format: string
+      tags:
+        - User
+        - Profile
+        - Images
+        - Files
+      produces:
+        - image/*
+        - application/json
+      responses:
+        200:
+          description: File data retrieved successfully
+          schema:
+            type: string
+            format: binary
+        404:
+          description: 'File not found'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Response'
+definitions:
+  Image:
+    description: Represents an image.
+    type: object
+    properties:
+      mimeType:
+        type: string
+        format: string
+        enum:
+          - 'image/png'
+          - 'image/jpg'
+        description: 'Image mime-type. Supports only image/jpg, image/jpeg and image/png.'
+      data:
+        type: string
+        format: string
+        description: Base64-encoded content of a picture.
+    required:
+      - mimeType
+      - data
+  UserRegistration:
+    description: Represents the structure of a user registration of the chat service.
+    type: object
+    properties:
+      login:
+        type: string
+        format: string
+        description: The login of the user.
+      password:
+        type: string
+        format: password
+        description: The password of the user.
+    required:
+      - login
+      - password
+  User:
+    description: Represents the structure of a user of the chat service.
+    type: object
+    properties:
+      login:
+        type: string
+        format: string
+        description: The login of the user.
+      email:
+        type: string
+        format: string
+        description: The email of the user.
+      picture:
+        type: string
+        format: string
+        description: The profile picture URL of the user.
+    required:
+      - login
+  UserProfileUpdate:
+    description: Represents the structure of a user profile update of the chat service.
+    type: object
+    properties:
+      email:
+        type: string
+        format: string
+        description: The new email of the user.
+      password:
+        type: string
+        format: password
+        description: The new password of the user.
+      picture:
+        $ref: '#/definitions/Image'
+    required:
+      - email
+  MultimediaChatMessage:
+    description: A multimedia form of a message sent through the chat. Can contain images
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: uuid
+        description: An unique identifier for the message. Should be set client-side.
+      login:
+        type: string
+        format: string
+        description: The login of the sender.
+      message:
+        type: string
+        format: string
+        description: The content of the message.
+      images:
+        type: array
+        items:
+          type: string
+          description: The url of the stored image.
+    required:
+      - uuid
+      - login
+      - message
+  MultimediaPostChatMessage:
+    description: A multimedia message submission object. Allows to post images.
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: uuid
+        description: An unique identifier for the message. Should be set client-side.
+      login:
+        type: string
+        format: string
+        description: The login of the sender.
+      message:
+        type: string
+        format: string
+        description: The content of the message.
+      attachments:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+    required:
+      - uuid
+      - login
+      - message
+  Response:
+    description: A JSON Representation of most HTTP Responses of the API.
+    type: object
+    properties:
+      status:
+        type: integer
+        format: int32
+        description: Represents the HTTP status code of the HTTP Response. Is always equal to the real HTTP Response Status code.
+      message:
+        type: string
+        description: Optional reason message (in english).
+    required:
+      - status
+  ResponseWithElements:
+    description: A JSON Representation of HTTP Responses with elements.
+    allOf:
+      - $ref: '#/definitions/Response'
+      - type: object
+        properties:
+          elements:
+            type: array
+            items:
+              type: string
+            description: 'Array of string keys. Identifies which specific elements are concerned. i.e.: which fields were not valid in the form.' 
+        required:
+          - elements
+      

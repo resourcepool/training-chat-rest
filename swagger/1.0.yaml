@@ -18,11 +18,8 @@ schemes:
   - https
 # will be prefixed to all paths
 basePath: /chat-rest/1.0
-consumes:
-  - application/json
 produces:
   - application/json
-  - image/png
 paths:
   /register/{login}/{password}:
     post:
@@ -209,7 +206,7 @@ definitions:
     required:
       - status
   ResponseWithElements:
-    description: Cat
+    description: A JSON Representation of HTTP Responses with elements.
     allOf:
       - $ref: '#/definitions/Response'
       - type: object
