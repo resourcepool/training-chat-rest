@@ -10,8 +10,14 @@ The API has been developed in multiple versions:
  * 2.0: Harder to implement, but more secure, with many more features. Login is done via basic HTTP, users have profiles with pictures, messages can contain attachments, can be fetched only with basic auth headers, and supports pagination.  
  * Websockets: Extension to 2.0, for real-time message updates, and login information.
 
+Both API 1.0 and 2.0 descriptors are documented and can be tried at:  
+[Swagger Documentation 1.0](https://training.loicortola.com/chat-rest/swagger/1.0.html)  
+[Swagger Documentation 2.0](https://training.loicortola.com/chat-rest/swagger/2.0.html)  
+
 The URI is formed of three parts:
 {baseURL}/{versionPrefix}/{route}
+
+For instance: To register a user, you would call https://training.loicortola.com/chat-rest/1.0/register/myuser/mypassword
 
 An example instance was published on the following baseURL: https://training.loicortola.com/chat-rest
 
