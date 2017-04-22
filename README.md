@@ -23,34 +23,247 @@ An example instance was published on the following baseURL: https://training.loi
 
 ### 1.0
 ---------------
-**versionPrefix: 1.0**
+**versionPrefix: /1.0**
 
 This API has permissive request Content-Types, and is best fit for beginners.
 
-| Endpoint | Returns |
-| ----- | ------ | ----------- | ------- |
-| <ul><li>**Route:** ``/register/{login}/{password}``</li><li>**Method:** ``POST``</li><li>**Description:** Register new user to chat service through API</li></ul> |  <table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Registered successfully"} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if login or/and password already exist</td></tr></table> |
-| <ul><li>**Route:** ``/connect/{login}/{password}``</li><li>**Method:** ``GET``</li><li>**Description:** Connect new user to chat service through API</li></ul> |  <table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Login successful"} if everything went well.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> |
-| <ul><li>**Route:** ``/messages/{login}/{password}``</li><li>**Method:** ``GET``</li><li>**Description:** Retrieve all messages from chat service API</li></ul> |  <table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON Array response [{"uuid":"...","login":"john","message":"Hello world! Ping"},{"uuid":"...","login":"jane","message":"Pong!"}] if everything went well.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> | 
-| <ul><li>**Route**: ``/messages/{login}/{password}``</li><li>**Method:** ``POST``</li><li>Post new message to chat service API</li></ul> |  <br/>**Request body:** {"uuid":"...","login":"jane","message":"Pong!"} <br/>**Warning: uuid is mandatory and should be a valid generated uuid!** <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Message posted successfully"} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if any mandatory body fields are absent/invalid or if message has already been posted.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> | 
+#### ``[GET] /register/{login}/{password}``
+---------------
+**Description:** Register new user to chat service through API
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Registered successfully"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>400-BAD-REQUEST</td>
+    <td>with JSON response {"status":400,"message":"...","elements":"..."} if login or/and password already exist</td>
+  </tr>
+</table>
+
+#### ``[GET] /connect/{login}/{password}``
+**Description:** Connect new user to chat service through API
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Login successful"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>401-UNAUTHORIZED</td>
+    <td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### ``[GET] /messages/{login}/{password}``
+**Description:** Retrieve all messages from chat service API
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON Array response [{"uuid":"...","login":"john","message":"Hello world! Ping"},{"uuid":"...","login":"jane","message":"Pong!"}] if everything went well.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### ``[POST] /messages/{login}/{password}``
+**Description:** Post new message to chat service API  
+**Request body:** {"uuid":"...","login":"jane","message":"Pong!"}  
+**Warning: uuid is mandatory and should be a valid generated uuid!**  
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Message posted successfully"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>400-BAD-REQUEST</td>
+    <td>with JSON response {"status":400,"message":"...","elements":"..."} if any mandatory body fields are absent/invalid or if message has already been posted.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
 
 ### 2.0
 ---------------
-**versionPrefix: 2.0**
+**versionPrefix: /2.0**
 
 This API performs authentication using basic authentication (more info: https://en.wikipedia.org/wiki/Basic_access_authentication)  
 The API searches for Content-Type:application/json header when required, and is best fit for advanced use.
 
-| Endpoint | Returns |
-| ----- | ------ | ----------- | ------- |
-| <ul><li>**Route:** ``/register``</li><li>**Method:** ``POST``</li><li>**Description:** Register new user to chat service through API</li></ul> |  <br/>**Request body:** {"login":"foo","password":"bar"} <br/>**Warning: requires Content-Type:application/json header!** <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Registered successfully"} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if login or/and password already exist, or fields not properly set.</td></tr></table> |
-| <ul><li>**Route:** ``/connect``</li><li>**Method:** ``GET``</li><li>**Description:** Connect new user to chat service through API</li></ul> | <br/>**Warning: requires Basic Authentication!** <br/> <table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Login successful"} if everything went well.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> |
-| <ul><li>**Route:** ``/profile/{login}``</li><li>**Method:** ``GET``</li><li>**Description:** Get the profile details of any user (login, email, picture)</li></ul> | <br/>**Warning: requires Basic Authentication!** <br/> <table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"login": "john", "email": "foo@bar.com", "picture": "https://training.loicortola.com/chat-rest/2.0/files/usr-john.jpg"} if everything went well.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> |
-| <ul><li>**Route:** ``/profile``</li><li>**Method:** ``POST``</li><li>**Description:** Update user profile (email, picture, password)</li></ul> | <br/>**Request body:** {"email": "foo@bar.com", "password":"newfoo", "picture":{"mimeType": "image/jpg", "data": "yourbase64profilepicture"}} <br/>**Warning: requires Basic Authentication!** <br/>**Warning: requires Content-Type:application/json header!** <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Profile updated successfully", "elements": ["picture", "password"]} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if fields not properly set.</td></tr></table> |
-| <ul><li>**Route:** ``/messages?&limit=10&offset=20&head=uuid-1234``</li><li>**Method:** ``GET``</li><li>**Description:** Retrieve all messages from chat service API</li></ul> | <br/>Optional parameters: <br/>**limit:** maximum number of results.<br/>**offset:** result offset.<br/>**head:** head pointer. Offset and limit values will take this message uuid as head reference instead of last posted message.<br/>**Warning: requires Basic Authentication!** <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON Array response [{"uuid":"...","login":"john","message":"Hello world! Ping"},{"uuid":"...","login":"jane","message":"Pong!", "images": ["https://training.loicortola.com/2.0/files/.../1.png"]}] if everything went well.<br/>**NB: images is not a mandatory field. it can hold URLs to the image attachments posted along with a message.**</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> | 
-| <ul><li>**Route**: ``/messages``</li><li>**Method:** ``POST``</li><li>Post new message to chat service API</li></ul> | <br/>**Warning: requires Basic Authentication!** <br/>**Request body:** {"uuid":"...","login":"jane","message":"Pong!", "attachments": [{"mimeType": "image/png", "data": "yourbase64imagecontenthere"}]} <br/>**Warning: uuid is mandatory and should be a valid generated uuid!**<br/>**NB: attachments is not a mandatory field. it can hold image/png or image/jpg content. Warning, size is limited to 1024kb by default.**<br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>JSON response {"status":200,"message":"Message posted successfully"} if everything went well.</td></tr><tr><td>400-BAD-REQUEST</td><td>with JSON response {"status":400,"message":"...","elements":"..."} if any mandatory body fields are absent/invalid or if message has already been posted.</td></tr><tr><td>401-UNAUTHORIZED</td><td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td></tr></table> | 
-| <ul><li>**Route:** ``/files/{uuid}/{fileName}``</li><li>**Method:** ``GET``</li><li>**Description:** Retrieve file posted along depending on the file extension.</li></ul> |  <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>image/* response if everything went well.</td></tr><tr><td>404-NOT-FOUND</td><td>if image does not exist.</td></tr></table> |
-| <ul><li>**Route:** ``/files/{filename}``</li><li>**Method:** ``GET``</li><li>**Description:** Retrieve profile picture.</li></ul> |  <br/><table><tr><th>Status</th><th>Body</th></tr><tr><td>200-OK</td><td>image/* response if everything went well.</td></tr><tr><td>404-NOT-FOUND</td><td>if image does not exist.</td></tr></table> |
+#### [POST] ``/register``
+**Description:** Register new user to chat service through API  
+**Request body:** {"login":"foo","password":"bar"}  
+**Warning: requires Content-Type:application/json header!** 
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Registered successfully"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>400-BAD-REQUEST</td>
+    <td>with JSON response {"status":400,"message":"...","elements":"..."} if login or/and password already exist, or fields not properly set.</td>
+  </tr>
+</table>
+
+#### [GET] ``/connect``
+**Description:** Connect new user to chat service through API  
+**Warning: requires Basic Authentication!**  
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Login successful"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>401-UNAUTHORIZED</td>
+    <td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### [GET] ``/profile/{login}``
+**Description:** Get the profile details of any user (login, email, picture)  
+**Warning: requires Basic Authentication!**  
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"login": "john", "email": "foo@bar.com", "picture": "https://training.loicortola.com/chat-rest/2.0/files/usr-john.jpg"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>401-UNAUTHORIZED</td>
+    <td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### [POST] ``/profile``
+**Description:** Update user profile (email, picture, password)  
+**Request body:** {"email": "foo@bar.com", "password":"newfoo", "picture":{"mimeType": "image/jpg", "data": "yourbase64profilepicture"}}   **Warning: requires Basic Authentication!**  
+**Warning: requires Content-Type:application/json header!** 
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Profile updated successfully", "elements": ["picture", "password"]} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>400-BAD-REQUEST</td>
+    <td>with JSON response {"status":400,"message":"...","elements":"..."} if fields not properly set.</td>
+  </tr>
+</table>
+
+#### [GET] ``/messages?&limit=10&offset=20&head=uuid-1234``
+**Description:** Retrieve all messages from chat service API  
+Optional parameters:  
+ * **limit:** maximum number of results.
+ * **offset:** result offset.
+ * **head:** head pointer. Offset and limit values will take this message uuid as head reference instead of last posted message.
+ 
+**Warning: requires Basic Authentication!**  
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON Array response [{"uuid":"...","login":"john","message":"Hello world! Ping"},{"uuid":"...","login":"jane","message":"Pong!", "images": ["https://training.loicortola.com/2.0/files/.../1.png"]}] if everything went well.<br/>**NB: images is not a mandatory field. it can hold URLs to the image attachments posted along with a message.**</td>
+  </tr>
+  <tr>
+    <td>401-UNAUTHORIZED</td>
+    <td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### [POST] ``/messages``
+**Description:** Post new message to chat service API  
+**Warning: requires Basic Authentication!**  
+**Request body:** {"uuid":"...","login":"jane","message":"Pong!", "attachments": [{"mimeType": "image/png", "data": "yourbase64imagecontenthere"}]}  
+**Warning: uuid is mandatory and should be a valid generated uuid!**  
+**NB: attachments is not a mandatory field. it can hold image/png or image/jpg content. Warning, size is limited to 1024kb by default.**  
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>JSON response {"status":200,"message":"Message posted successfully"} if everything went well.</td>
+  </tr>
+  <tr>
+    <td>400-BAD-REQUEST</td>
+    <td>with JSON response {"status":400,"message":"...","elements":"..."} if any mandatory body fields are absent/invalid or if message has already been posted.</td>
+  </tr>
+  <tr>
+    <td>401-UNAUTHORIZED</td>
+    <td>with JSON response {"status":401,"message":"...","elements":"..."} if login or/and password provided are not correct</td>
+  </tr>
+</table>
+
+#### [GET] ``/files/{uuid}/{fileName}``
+**Description:** Retrieve file posted along depending on the file extension.
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>image/* response if everything went well.</td>
+  </tr>
+  <tr>
+    <td>404-NOT-FOUND</td>
+    <td>if image does not exist.</td>
+  </tr>
+</table> 
+
+#### [GET] ``/files/{filename}``
+**Description:** Retrieve profile picture.
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td>200-OK</td>
+    <td>image/* response if everything went well.</td>
+  </tr>
+  <tr>
+    <td>404-NOT-FOUND</td>
+    <td>if image does not exist.</td>
+  </tr>
+</table>
 
 ### Websocket API
 ---------------
